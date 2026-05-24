@@ -26,35 +26,24 @@ func aboutHandler(w http.ResponseWriter, r *http.Request) {
 
 func getProducts(w http.ResponseWriter, r *http.Request) {
 	handleCors(w)
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
 	sendData(w, ProductList, http.StatusOK)
 }
 
 func postProducts(w http.ResponseWriter, r *http.Request) {
 	handleCors(w)
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
 
 	var newProduct Product
 
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&newProduct)
-	if err != nil {
-		http.Error(w, "Error decoding product", http.StatusBadRequest)
-		return
-	}
+	receiveData(w, r, &newProduct)
+
 	newProduct.ID = len(ProductList) + 1
 	ProductList = append(ProductList, newProduct)
 
 	sendData(w, newProduct, http.StatusCreated)
 
 }
+
+
 
 func handleCors(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -75,17 +64,24 @@ func sendData(w http.ResponseWriter, data interface{}, statusCode int) {
 	err := encoder.Encode(data)
 	if err != nil {
 		http.Error(w, "Error encoding data", http.StatusInternalServerError)
-		return
+	}
+}
+
+func receiveData(w http.ResponseWriter, r *http.Request, data interface{}) {
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(data)
+	if err != nil {
+		http.Error(w, "Error decoding data", http.StatusBadRequest)
 	}
 }
 
 func main() {
-	mux := http.NewServeMux() // Create a new ServeMux to handle routes
+	mux := http.NewServeMux() // Create a new ServeMux to handle routes. its called router in other languages
 	
-	mux.HandleFunc("GET /hello", helloHandler)
-	mux.HandleFunc("GET /about", aboutHandler)
-	mux.HandleFunc("GET /products", getProducts)
-	mux.HandleFunc("POST /products", postProducts)
+	mux.Handle("GET /hello", http.HandlerFunc(helloHandler))
+	mux.Handle("GET /about", http.HandlerFunc(aboutHandler))
+	mux.Handle("GET /products", http.HandlerFunc(getProducts))
+	mux.Handle("POST /products", http.HandlerFunc(postProducts))
 
 	fmt.Println("Server is running on http://localhost:8081")
 	err := http.ListenAndServe(":8081", mux)
