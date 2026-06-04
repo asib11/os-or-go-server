@@ -1,11 +1,11 @@
-package main
+package utils
 
 import (
 	"encoding/json"
 	"net/http"
 )
 
-func receiveData(w http.ResponseWriter, r *http.Request, data interface{}) error {
+func ReceiveData(w http.ResponseWriter, r *http.Request, data interface{}) error {
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(data)
 	if err != nil {
