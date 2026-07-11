@@ -1,14 +1,16 @@
 package middleware
 
 import (
-	"log"
 	"net/http"
 )
 
-func Test(next http.Handler) http.Handler {
+func Preflight(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Test middleware logic
+		
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
 		next.ServeHTTP(w, r)
-		log.Println("this is test middleware: test print hobo")
 	})
 }
