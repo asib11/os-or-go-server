@@ -1,12 +1,17 @@
 package cmd
 
 import (
+	"ecommerce/config"
 	"ecommerce/middleware"
 	"fmt"
 	"net/http"
+	"os"
+	"strconv"
 )
 
 func Serve() {
+	conf := config.GetConfig()
+
 	manager := middleware.NewManager()
 	manager.Use(
 		middleware.Preflight,
@@ -16,12 +21,15 @@ func Serve() {
 
 	mux := http.NewServeMux() // Create a new ServeMux to handle routes. its called router in other languages
 	wrappedMux := manager.WrapMux(mux)
-	
+
 	initRoutes(mux, manager)
-	
-	fmt.Println("Server is running on http://localhost:8081")
-	err := http.ListenAndServe(":8081", wrappedMux)
+
+	addr := strconv.Itoa(conf.HttpPort)
+
+	fmt.Println("Server is running on http://localhost:" + addr)
+	err := http.ListenAndServe(":"+addr, wrappedMux)
 	if err != nil {
 		fmt.Println("Error starting server:", err)
+		os.Exit(1)
 	}
 }

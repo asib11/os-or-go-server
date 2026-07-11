@@ -1,28 +1,48 @@
 # Os or Go Server
 
-A minimal Go HTTP server that exposes a simple products API. It supports listing
-products and creating a new product via JSON.
+A minimal Go HTTP server that exposes a small in-memory products API. It ships
+with a few seeded products, supports creating new ones, and can fetch products
+by ID.
 
 ## Requirements
 
-- Go 1.22+ (module uses the standard library only)
+- Go 1.22+
+- Standard library only
 
 ## Run
 
 ```bash
-go run .
+go run main.go
 ```
 
-Server starts at `http://localhost:8081`.
+The server starts on `http://localhost:8081`.
 
 ## API
+
+### Health check
+
+`GET /test`
+
+```bash
+curl http://localhost:8081/test
+```
 
 ### List products
 
 `GET /products`
 
+Returns the current in-memory product list as JSON.
+
 ```bash
 curl http://localhost:8081/products
+```
+
+### Get a product by ID
+
+`GET /products/{id}`
+
+```bash
+curl http://localhost:8081/products/1
 ```
 
 ### Create a product
@@ -49,4 +69,5 @@ curl -X POST http://localhost:8081/products \
 Notes:
 
 - The server assigns the `id` field automatically.
+- Data is stored in memory, so restarting the server resets the product list.
 - Make sure the `Content-Type` header is `application/json`.
