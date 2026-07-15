@@ -13,6 +13,7 @@ type Config struct {
 	Version     string
 	ServiceName string
 	HttpPort    int
+	JWTSecret   string
 }
 
 func loadConfig() {
@@ -46,10 +47,17 @@ func loadConfig() {
 		os.Exit(1)
 	}
 
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		fmt.Println("JWT_SECRET environment variable is not set")
+		os.Exit(1)
+	}
+
 	configurations = Config{
 		Version:     version,
 		ServiceName: serviceName,
 		HttpPort:    int(port),
+		JWTSecret:   jwtSecret,
 	}
 }
 
