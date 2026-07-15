@@ -3,13 +3,19 @@ package middleware
 import (
 	"crypto/hmac"
 	"crypto/sha256"
-	"ecommerce/config"
 	"encoding/base64"
 	"net/http"
 	"strings"
 )
 
-func AuthenticateJWT(next http.Handler) http.Handler {
+func (m *Middlewares) AuthenticateJWT(next http.Handler) http.Handler {
+	// parse jwt
+	// parse header and payload or claims
+	// hmac-sha-256 algorithm -> hash hmac(header, payload, secret key)
+	// parse signature part from the jwt
+	// if the signature and hash is same => forward to create products
+	// otherwise 401 status code with Unauthorized
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		token := r.Header.Get("Authorization")
@@ -43,9 +49,7 @@ func AuthenticateJWT(next http.Handler) http.Handler {
 
 		message := jwtHeader + "." + jwtPayload
 
-		cnf := config.GetConfig()
-
-		byteArrSecret := []byte(cnf.JWTSecret)
+		byteArrSecret := []byte(m.conf.JWTSecret)
 		byteArrMessage := []byte(message)
 
 		h := hmac.New(sha256.New, byteArrSecret)
