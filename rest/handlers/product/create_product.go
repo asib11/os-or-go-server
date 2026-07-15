@@ -1,4 +1,4 @@
-package handlers
+package product
 
 import (
 	"ecommerce/database"
@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func CreateProducts(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) CreateProducts(w http.ResponseWriter, r *http.Request) {
 	var newProduct database.Product
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&newProduct)
@@ -17,6 +17,6 @@ func CreateProducts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	createdProduct := database.Store(newProduct)
-	
+
 	utils.SendData(w, createdProduct, http.StatusCreated)
 }

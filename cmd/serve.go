@@ -3,10 +3,17 @@ package cmd
 import (
 	"ecommerce/config"
 	"ecommerce/rest"
+	"ecommerce/rest/handlers/product"
+	"ecommerce/rest/handlers/user"
 )
 
 func Serve() {
 	conf := config.GetConfig()
-	rest.Start(conf)
+
+	productHandler := product.NewHandler()
+	userHandler := user.NewHandler()
+
+	server := rest.NewServer(productHandler, userHandler)
+	server.Start(conf)
 
 }
