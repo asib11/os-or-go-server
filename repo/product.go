@@ -2,11 +2,11 @@ package repo
 
 
 type Product struct {
-	ID          int     `db:"id"`
-	Title	   string  `db:"title"`
-	Description string  `db:"description"`
-	Price       float64 `db:"price"`
-	ImageURL    string  `db:"imageUrl"`
+	ID          int     `json:"id"`
+	Title	   string  `json:"title"`
+	Description string  `json:"description"`
+	Price       float64 `json:"price"`
+	ImageURL    string  `json:"imageUrl"`
 }
 
 type ProductRepo interface {

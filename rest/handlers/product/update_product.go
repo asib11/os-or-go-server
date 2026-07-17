@@ -1,23 +1,30 @@
 package product
 
 import (
-	"ecommerce/database"
+	"ecommerce/repo"
 	"ecommerce/utils"
 	"encoding/json"
 	"net/http"
 	"strconv"
 )
 
+type ReqUpdateProduct struct {
+	Title       string  `json:"title"`
+	Description string  `json:"description"`
+	Price       float64 `json:"price"`
+	ImageURL    string  `json:"imageUrl"`
+}
+
 func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 
 	pID, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "Invalid product ID", http.StatusBadRequest)
+		utils.ErrorData(w, http.StatusBadRequest, "Invalid product ID")
 		return
 	}
 
-	var newProduct database.Product
+	var newProduct ReqUpdateProduct
 	decoder := json.NewDecoder(r.Body)
 	err = decoder.Decode(&newProduct)
 	if err != nil {
@@ -25,9 +32,18 @@ func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newProduct.ID = pID
-	database.UpdateProduct(newProduct)
+	product, err := h.productRepo.Update(repo.Product{
+		ID:          pID,
+		Title:       newProduct.Title,
+		Description: newProduct.Description,
+		Price:       newProduct.Price,
+		ImageURL:    newProduct.ImageURL,
+	})
 
-	utils.SendData(w, "Successfully updated product", http.StatusOK)
+	if err != nil {
+		utils.ErrorData(w, http.StatusInternalServerError, "Failed to update product")
+		return
+	}
 
+	utils.SendData(w, http.StatusOK, product)
 }

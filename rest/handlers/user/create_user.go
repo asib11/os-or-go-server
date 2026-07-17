@@ -1,27 +1,40 @@
 package user
 
 import (
-	"ecommerce/database"
+	"ecommerce/repo"
 	"ecommerce/utils"
 	"encoding/json"
 	"net/http"
 )
 
+type ReqCreateUser struct {
+	FirstName   string `json:"first_name"`
+	LastName    string `json:"last_name"`
+	Email       string `json:"email"`
+	Password    string `json:"password"`
+	IsShopOwner bool   `json:"is_owner"`
+}
+
 func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
-	var newUser database.User
+	var req ReqCreateUser
 	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&newUser)
+	err := decoder.Decode(&req)
 	if err != nil {
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		utils.ErrorData(w, http.StatusBadRequest, "Invalid JSON") 
 		return
 	}
 
-	if database.FindUserByEmail(newUser.Email, newUser.Password) != nil {
-		http.Error(w, "User with this email already exists", http.StatusConflict)
+	createdUser, err := h.userRepo.Create(repo.User{
+		FirstName:   req.FirstName,
+		LastName:    req.LastName,
+		Email:       req.Email,
+		Password:    req.Password,
+		IsShopOwner: req.IsShopOwner,
+	})
+	if err != nil {
+		utils.ErrorData(w, http.StatusInternalServerError, "Failed to create user")
 		return
 	}
 
-	createdUser := newUser.Store()
-
-	utils.SendData(w, createdUser, http.StatusCreated)
+	utils.SendData(w,http.StatusCreated, createdUser)
 }

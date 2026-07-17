@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func ErrorData(w http.ResponseWriter, err string, statusCode int) {
+func ErrorData(w http.ResponseWriter,statusCode int, err string) {
 	w.WriteHeader(statusCode)
 	encoder := json.NewEncoder(w)
 	encoder.Encode(err)
