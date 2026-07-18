@@ -12,7 +12,7 @@ type ReqCreateUser struct {
 	LastName    string `json:"last_name"`
 	Email       string `json:"email"`
 	Password    string `json:"password"`
-	IsShopOwner bool   `json:"is_owner"`
+	IsShopOwner bool   `json:"is_shop_owner"`
 }
 
 func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -20,7 +20,7 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&req)
 	if err != nil {
-		utils.ErrorData(w, http.StatusBadRequest, "Invalid JSON") 
+		utils.ErrorData(w, http.StatusBadRequest, "Invalid JSON")
 		return
 	}
 
@@ -36,5 +36,5 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendData(w,http.StatusCreated, createdUser)
+	utils.SendData(w, http.StatusCreated, createdUser)
 }
