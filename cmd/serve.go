@@ -21,10 +21,10 @@ func Serve() {
 		os.Exit(1)
 	}
 
-	productRepo := repo.NewProductRepo()
+	productRepo := repo.NewProductRepo(dbConn)
+	userRepo := repo.NewUserRepo(dbConn)
 
 	middlewares := middleware.NewMiddlewares(conf)
-	userRepo := repo.NewUserRepo(dbConn)
 
 	productHandler := product.NewHandler(middlewares, productRepo)
 	userHandler := user.NewHandler(conf, userRepo)
