@@ -1,14 +1,18 @@
 package repo
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/jmoiron/sqlx"
+)
 
 type User struct {
-	ID          int    `json:"id"`
-	FirstName   string `json:"first_name"`
-	LastName    string `json:"last_name"`
-	Email       string `json:"email"`
-	Password    string `json:"password"`
-	IsShopOwner bool   `json:"is_owner"`
+	ID          int    `json:"id" db:"id"`
+	FirstName   string `json:"first_name" db:"first_name"`
+	LastName    string `json:"last_name" db:"last_name"`
+	Email       string `json:"email" db:"email"`
+	Password    string `json:"password" db:"password"`
+	IsShopOwner bool   `json:"is_shop_owner" db:"is_shop_owner"`
 }
 
 type UserRepo interface {
@@ -20,29 +24,39 @@ type UserRepo interface {
 }
 
 type userRepo struct {
-	users []User
+	db *sqlx.DB
 }
 
-func NewUserRepo() UserRepo {
-	repo := &userRepo{}
-	return repo
+func NewUserRepo(db *sqlx.DB) UserRepo {
+	return &userRepo{
+		db: db,
+	}
 }
 
 func (r *userRepo) Create(user User) (*User, error) {
-	if user.ID != 0 {
-		return &user, nil
+	QUERY := `INSERT INTO users (first_name, last_name, email, password, is_shop_owner) VALUES (:first_name, :last_name, :email, :password, :is_shop_owner) RETURNING id`
+
+	var userID int
+	row, err := r.db.NamedQuery(QUERY, user)
+	if err != nil {
+		return nil, err
 	}
 
-	user.ID = len(r.users) + 1
-	r.users = append(r.users, user)
+	if row.Next() {
+		row.Scan(&userID)
+	}
+	user.ID = userID
 	return &user, nil
 }
 
 func (r *userRepo) Find(email, password string) (*User, error) {
-	for _, u := range r.users {
-		if u.Email == email && u.Password == password {
-			return &u, nil
-		}
+	QUERY := `SELECT * FROM users WHERE email = $1 AND password = $2 LIMIT 1`
+
+	var user User
+	err := r.db.Get(&user, QUERY, email, password)
+	if err != nil {
+		return nil, errors.New("user not found")
 	}
-	return nil, errors.New("user not found")
+	return &user, nil
 }
+
