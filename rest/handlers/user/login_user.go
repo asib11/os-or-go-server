@@ -26,6 +26,10 @@ func (h *Handler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if usr == nil {
+		utils.ErrorData(w, http.StatusUnauthorized, "Invalid email or password")
+		return
+	}
 
 	accessToken, err := utils.CreateJWT(h.conf.JWTSecret, utils.Payload{
 		Sub: usr.ID,
