@@ -8,7 +8,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func GetConnectionString(conf *config.DbConfig) string {
+func getConnectionString(conf *config.DbConfig) string {
 	return fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
 		conf.DbHost,
 		conf.DbPort,
@@ -20,7 +20,7 @@ func GetConnectionString(conf *config.DbConfig) string {
 }
 
 func NewConnectionString(conf *config.DbConfig) (*sqlx.DB, error) {
-	dbSource := GetConnectionString(conf)
+	dbSource := getConnectionString(conf)
 	dbConn, err := sqlx.Connect("postgres", dbSource)
 	if err != nil {
 		return nil, err

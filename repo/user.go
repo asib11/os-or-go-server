@@ -1,6 +1,8 @@
 package repo
 
 import (
+	"ecommerce/domain"
+	"ecommerce/user"
 	"errors"
 
 	"github.com/jmoiron/sqlx"
@@ -16,11 +18,7 @@ type User struct {
 }
 
 type UserRepo interface {
-	Create(user User) (*User, error)
-	Find(email, password string) (*User, error)
-	// List() ([]*User, error)
-	// Update(user User) (*User, error)
-	// Delete(userID int) error
+	user.UserRepo
 }
 
 type userRepo struct {
@@ -33,7 +31,7 @@ func NewUserRepo(db *sqlx.DB) UserRepo {
 	}
 }
 
-func (r *userRepo) Create(user User) (*User, error) {
+func (r *userRepo) Create(user domain.User) (*domain.User, error) {
 	QUERY := `INSERT INTO users (first_name, last_name, email, password, is_shop_owner) VALUES (:first_name, :last_name, :email, :password, :is_shop_owner) RETURNING id`
 
 	var userID int
@@ -49,14 +47,13 @@ func (r *userRepo) Create(user User) (*User, error) {
 	return &user, nil
 }
 
-func (r *userRepo) Find(email, password string) (*User, error) {
+func (r *userRepo) Find(email, password string) (*domain.User, error) {
 	QUERY := `SELECT * FROM users WHERE email = $1 AND password = $2 LIMIT 1`
 
-	var user User
+	var user domain.User
 	err := r.db.Get(&user, QUERY, email, password)
 	if err != nil {
 		return nil, errors.New("user not found")
 	}
 	return &user, nil
 }
-
