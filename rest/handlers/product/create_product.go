@@ -1,14 +1,14 @@
 package product
 
 import (
-	"ecommerce/repo"
+	"ecommerce/domain"
 	"ecommerce/utils"
 	"encoding/json"
 	"net/http"
 )
 
 type ReqCreateProduct struct {
-	Title	   string  `json:"title"`
+	Title       string  `json:"title"`
 	Description string  `json:"description"`
 	Price       float64 `json:"price"`
 	ImageURL    string  `json:"imageUrl"`
@@ -23,7 +23,7 @@ func (h *Handler) CreateProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createdProduct, err := h.productRepo.Create(repo.Product{
+	createdProduct, err := h.svc.Create(domain.Product{
 		Title:       req.Title,
 		Description: req.Description,
 		Price:       req.Price,

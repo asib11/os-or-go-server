@@ -1,7 +1,7 @@
 package product
 
 import (
-	"ecommerce/repo"
+	"ecommerce/domain"
 	"ecommerce/utils"
 	"encoding/json"
 	"net/http"
@@ -32,7 +32,7 @@ func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	product, err := h.productRepo.Update(repo.Product{
+	product, err := h.svc.Update(domain.Product{
 		ID:          pID,
 		Title:       newProduct.Title,
 		Description: newProduct.Description,
