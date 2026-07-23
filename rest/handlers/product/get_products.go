@@ -8,7 +8,7 @@ import (
 func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	products, err := h.productRepo.List()
 	if err != nil {
-		http.Error(w, "Failed to list products", http.StatusInternalServerError)
+		utils.ErrorData(w, http.StatusInternalServerError, "Failed to retrieve products")
 		return
 	}
 	utils.SendData(w, http.StatusOK, products)
