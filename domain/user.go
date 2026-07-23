@@ -8,4 +8,6 @@ type User struct {
 	Email       string `json:"email" db:"email"`
 	Password    string `json:"password" db:"password"`
 	IsShopOwner bool   `json:"is_shop_owner" db:"is_shop_owner"`
+	CreatedAt   string `json:"created_at" db:"created_at"`
+	UpdatedAt   string `json:"updated_at" db:"updated_at"`
 }
